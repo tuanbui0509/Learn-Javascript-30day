@@ -55,9 +55,24 @@
             form: '#form-1',
             errorSelector: '.form-message',
             rules: [
-                Validator.isRequired('#fullname'),
-                Validator.isEmail('#email')
-            ]
+                Validator.isRequired('#fullname', 'Vui lòng nhập trường này !!!'),
+
+                Validator.isRequired('#email', 'Vui lòng nhập trường này !!!'),
+                Validator.isEmail('#email', 'Vui lòng nhập Email !!!'),
+
+                Validator.isRequired('#password', 'Vui lòng nhập trường này !!!'),
+                Validator.minLength('#password', 6, `Vui lòng nhập tối thiểu 6 ký tự`),
+
+                Validator.isRequired('#password_confirmation', 'Vui lòng nhập trường này !!!'),
+                Validator.isConfirmed('#password_confirmation', function () {
+                    return document.querySelector('#form-1 #password').value
+                },
+                    'Mật khẩu nhập lại không chính xác'
+                )
+            ],
+            onSubmit: function (data){
+                console.log(data);
+            }
         })
 
     </script>
