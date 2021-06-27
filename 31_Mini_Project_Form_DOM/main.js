@@ -1,11 +1,19 @@
 // Đối tượng validator
 function Validator(options) {
 
+    function getParent(element, selector) {
+        while (element.parentElement) {
+            if (element.parentElement.matches(selector))
+                return element.parentElement
+        }
+        element = element.parentElement;
+    }
+
     let selectorRules = {}
 
     // Hàm thực hiện validate
     function validate(inputElement, rule) {
-        let errorElement = inputElement.parentElement.querySelector(options.errorSelector)
+        let errorElement = getParent(inputElement, options.formGroupSelector).querySelector(options.errorSelector)
         let errorMassage = rule.test(inputElement.value)
 
         // Lấy rules của selectorRules
@@ -20,11 +28,11 @@ function Validator(options) {
 
         if (errorMassage) {
             errorElement.innerText = errorMassage
-            inputElement.parentElement.classList.add('invalid')
+            getParent(inputElement, options.formGroupSelector).classList.add('invalid')
         }
         else {
             errorElement.innerText = ''
-            inputElement.parentElement.classList.remove('invalid')
+            getParent(inputElement, options.formGroupSelector).classList.remove('invalid')
         }
 
         return !errorMassage
@@ -50,14 +58,15 @@ function Validator(options) {
                 if (typeof (options.onSubmit) === 'function') {
                     let enableInputs = formElement.querySelectorAll('[name]:not([disabled])')
                     let formValues = Array.from(enableInputs).reduce(function (values, input) {
-                        return (values[input.name] = input.value) && values
+                        values[input.name] = input.value
+                        return values
                     }, {})
                     options.onSubmit(formValues)
                 }
             }
             // Submit with default
             else {
-                formElement.submit()
+                // formElement.submit()
             }
         }
 
@@ -71,7 +80,7 @@ function Validator(options) {
                 selectorRules[rule.selector] = [rule.test]
 
             let inputElement = formElement.querySelector(rule.selector)
-            let errorElement = inputElement.parentElement.querySelector(options.errorSelector)
+            let errorElement = getParent(inputElement, options.formGroupSelector).querySelector(options.errorSelector)
             if (inputElement) {
                 // Xử lý trường hợp blur khòi input
                 inputElement.onblur = function () {
@@ -80,7 +89,7 @@ function Validator(options) {
                 // Xử lý người dùng nhập vào input
                 inputElement.oninput = function () {
                     errorElement.innerText = ''
-                    inputElement.parentElement.classList.remove('invalid')
+                    getParent(inputElement, options.formGroupSelector).classList.remove('invalid')
                 }
             }
         })
